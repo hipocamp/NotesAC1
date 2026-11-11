@@ -181,7 +181,7 @@
         <input 
           type="text" 
           id="niubInput" 
-          placeholder="ex: 20622195" 
+          placeholder="ex: 22402262 o niub22402262" 
           required 
           autocomplete="off"
         >
@@ -633,7 +633,7 @@
       const resultValue = document.getElementById('resultValue');
       const resultNiub = document.getElementById('resultNiub');
 
-      // Normalitzar el format del NIUB introduït
+      // Normalitzar automàticament el NIUB (permet escriure "22402262" o "niub22402262")
       let niubKey = niubRaw;
       if (!niubKey.startsWith('niub')) {
         niubKey = 'niub' + niubKey;
