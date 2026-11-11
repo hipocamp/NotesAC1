@@ -514,13 +514,11 @@
       }
     }
 
-    // Assignació directa i robusta de l'esdeveniment al botó
     document.getElementById("botoConsulta").addEventListener("click", function(e) {
       e.preventDefault();
       consultaNota();
     });
 
-    // Permetre prémer Enter
     document.getElementById("niub").addEventListener("keydown", function(e) {
       if (e.key === "Enter") {
         e.preventDefault();
