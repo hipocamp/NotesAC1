@@ -161,7 +161,6 @@
       <button
         type="button"
         id="botoConsulta"
-        onclick="consultaNota()"
       >
         Consultar nota
       </button>
@@ -173,9 +172,6 @@
 
   <script>
     "use strict";
-
-    // Base de dades de l'alumnat:
-    // NIUB | correu electrònic | nota
 
     const dades = `
 niub14579320|igalanva7@alumnes.ub.edu|7.9
@@ -626,7 +622,7 @@ niub95814843|jtorrema129@alumnes.ub.edu|5.2
 
     function consultaNota() {
       const email = normalitza(campEmail.value);
-      const niub = normalitza(campNiub.value);
+      let niub = normalitza(campNiub.value);
 
       resultat.className = "";
       resultat.style.display = "none";
@@ -634,14 +630,17 @@ niub95814843|jtorrema129@alumnes.ub.edu|5.2
 
       if (!email || !niub) {
         resultat.className = "error";
-        resultat.textContent =
-          "Introdueix l'adreça electrònica i el número NIUB.";
+        resultat.textContent = "Introdueix l'adreça electrònica i el número NIUB.";
         return;
       }
 
+      // Si l'usuari posa només els números, afegim "niub" automàticament
+      if (!niub.startsWith("niub")) {
+        niub = "niub" + niub;
+      }
+
       const alumne = alumnes.find(function(registre) {
-        return registre.email === email &&
-               registre.niub === niub;
+        return registre.email === email && registre.niub === niub;
       });
 
       if (alumne) {
@@ -657,23 +656,26 @@ niub95814843|jtorrema129@alumnes.ub.edu|5.2
       }
     }
 
-    // Consulta en fer clic al botó.
-    document.getElementById("botoConsulta")
-      .addEventListener("click", consultaNota);
+    // Consulta en fer clic al botó de manera robusta.
+    document.getElementById("botoConsulta").addEventListener("click", function(event) {
+      event.preventDefault();
+      consultaNota();
+    });
 
-    // També permet consultar prement Retorn.
+    // Permet consultar prement Retorn a qualsevol dels dos inputs.
     campEmail.addEventListener("keydown", function(event) {
       if (event.key === "Enter") {
+        event.preventDefault();
         consultaNota();
       }
     });
 
     campNiub.addEventListener("keydown", function(event) {
       if (event.key === "Enter") {
+        event.preventDefault();
         consultaNota();
       }
     });
-
   </script>
 
 </body>
