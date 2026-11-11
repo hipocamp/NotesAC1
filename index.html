@@ -66,6 +66,7 @@
       <div class="h-2 bg-gradient-to-r from-ub-navy via-ub-gold to-ub-navy"></div>
 
       <div class="p-6 sm:p-8">
+        
         <!-- Formulari de Consulta -->
         <div id="query-section">
           <div class="text-center mb-6">
@@ -193,90 +194,97 @@
 
   <footer class="w-full max-w-xl mx-auto text-center pt-8 pb-4 text-xs text-slate-400 no-print">
     <p class="font-medium text-slate-500">Facultat de Psicologia &bull; Universitat de Barcelona</p>
-    <p class="mt-1 text-[11px] text-slate-400">Les dades consultades estan protegides d'acord amb la normativa RGPD.</p>
+    <p class="mt-1 text-[11px] text-slate-400">Les dades consultades estan protegides criptogràficament d'acord amb la normativa RGPD.</p>
   </footer>
 
   <script>
-    // Funció SHA-256 en pur JavaScript autònom (no depèn de HTTPS ni de crypto.subtle)
-    function sha256(ascii) {
-      function rightRotate(value, amount) {
-        return (value >>> amount) | (value << (32 - amount));
-      }
-      var mathPow = Math.pow;
-      var maxWord = mathPow(2, 32);
-      var i, j, result = '', words = [];
-      var asciiBitLength = ascii.length * 8;
-      var hash = [], k = [], primeCounter = 0;
-
-      var isComposite = {};
-      for (var candidate = 2; primeCounter < 64; candidate++) {
-        if (!isComposite[candidate]) {
-          for (i = 0; i < 313; i += candidate) isComposite[i] = candidate;
-          hash[primeCounter] = (mathPow(candidate, 0.5) * maxWord) | 0;
-          k[primeCounter++] = (mathPow(candidate, 1/3) * maxWord) | 0;
-        }
-      }
-
-      ascii += '\x80';
-      while (ascii.length % 64 - 56) ascii += '\x00';
-      for (i = 0; i < ascii.length; i++) {
-        j = ascii.charCodeAt(i);
-        words[i >> 2] |= j << ((3 - i) % 4) * 8;
-      }
-      words[words.length] = ((asciiBitLength / maxWord) | 0);
-      words[words.length] = (asciiBitLength);
-
-      for (j = 0; j < words.length;) {
-        var w = words.slice(j, j += 16);
-        var oldHash = hash;
-        hash = hash.slice(0, 8);
-
-        for (i = 0; i < 64; i++) {
-          var w15 = w[i - 15], w2 = w[i - 2];
-          var a = hash[0], e = hash[4];
-          var temp1 = hash[7]
-            + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25))
-            + ((e & hash[5]) ^ ((~e) & hash[6]))
-            + k[i]
-            + (w[i] = (i < 16) ? w[i] : (
-                w[i - 16]
-                + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3))
-                + w[i - 7]
-                + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))
-              ) | 0
-            );
-          var temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22))
-            + ((a & hash[1]) ^ ((a & hash[2]) ^ (hash[1] & hash[2])));
-
-          hash = [(temp1 + temp2) | 0].concat(hash);
-          hash[4] = (hash[4] + temp1) | 0;
-        }
-
-        for (i = 0; i < 8; i++) hash[i] = (hash[i] + oldHash[i]) | 0;
-      }
-
-      for (i = 0; i < 8; i++) {
-        for (j = 3; j + 1; j--) {
-          var b = (hash[i] >> (j * 8)) & 255;
-          result += ((b < 16) ? 0 : '') + b.toString(16);
-        }
-      }
-      return result;
-    }
-
-    // Dades de qualificacions (AC1.xlsx) xifrades amb SHA-256
     let DATABASE = {};
 
-    // Carrega de la base de dades incrustada o des del fitxer extern
+    // Carreguem les notes xifrades des de notes_ac1.json
     fetch('notes_ac1.json')
       .then(res => res.json())
-      .then(data => { DATABASE = data; })
-      .catch(() => {
-        // Si s'obre en local sense servidor, s'assigna directament:
-        if (window.__LOCAL_DB__) DATABASE = window.__LOCAL_DB__;
+      .then(data => {
+        DATABASE = data;
+      })
+      .catch(err => {
+        console.error('Error carregant notes_ac1.json:', err);
       });
+
+    async function sha256(str) {
+      const msgUint8 = new TextEncoder().encode(str);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function cercarNota() {
+      const emailInput = document.getElementById('email').value.trim().toLowerCase();
+      const niubInput = document.getElementById('niub').value.trim().toLowerCase();
+      const errorBox = document.getElementById('error-box');
+
+      errorBox.classList.add('hidden');
+
+      if (!emailInput || !niubInput) return;
+
+      let fullEmail = emailInput;
+      if (!fullEmail.includes('@')) {
+        fullEmail = fullEmail + '@alumnes.ub.edu';
+      }
+
+      // Netegem el NIUB per quedar-nos només amb els dígits
+      const cleanNiubMatch = niubInput.match(/\d+/);
+      const cleanNiub = cleanNiubMatch ? cleanNiubMatch[0] : niubInput;
+
+      // Cerquem tant amb dígits nets com amb el prefix niub per màxima compatibilitat
+      const hash1 = await sha256(`${fullEmail}|${cleanNiub}`);
+      const hash2 = await sha256(`${fullEmail}|niub${cleanNiub}`);
+
+      const record = DATABASE[hash1] || DATABASE[hash2];
+
+      if (record) {
+        mostrarResultat(record, cleanNiub);
+      } else {
+        errorBox.classList.remove('hidden');
+      }
+    }
+
+    function mostrarResultat(record, niub) {
+      document.getElementById('query-section').classList.add('hidden');
+      const resSection = document.getElementById('result-section');
+      resSection.classList.remove('hidden');
+
+      document.getElementById('student-niub').textContent = niub;
+      document.getElementById('student-grade').textContent = record.nota;
+
+      const badge = document.getElementById('badge-status');
+      badge.className = "mt-2 inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide";
+
+      if (record.estat === 'Aprovat') {
+        badge.classList.add('bg-emerald-100', 'text-emerald-800', 'border', 'border-emerald-200');
+        badge.textContent = 'Aprovat';
+        document.getElementById('student-grade').className = "text-5xl sm:text-6xl font-extrabold text-emerald-600 tracking-tight";
+      } else if (record.estat === 'Suspens') {
+        badge.classList.add('bg-rose-100', 'text-rose-800', 'border', 'border-rose-200');
+        badge.textContent = 'Suspens';
+        document.getElementById('student-grade').className = "text-5xl sm:text-6xl font-extrabold text-rose-600 tracking-tight";
+      } else {
+        badge.classList.add('bg-amber-100', 'text-amber-800', 'border', 'border-amber-200');
+        badge.textContent = 'No Presentat';
+        document.getElementById('student-grade').className = "text-5xl sm:text-6xl font-extrabold text-slate-600 tracking-tight";
+      }
+    }
+
+    function novaConsulta() {
+      document.getElementById('result-section').classList.add('hidden');
+      document.getElementById('query-section').classList.remove('hidden');
+      document.getElementById('email').value = '';
+      document.getElementById('niub').value = '';
+      document.getElementById('email').focus();
+    }
+
+    function imprimirComprovant() {
+      window.print();
+    }
   </script>
-  <script src="notes_ac1.json" type="application/json" id="embedded-data"></script>
-  <script>
-    // Base de dades incrustada per garantir funcionament immediat amb doble clic
-    window.__LOCAL_DB__ = /* INLINE_DB_START */ {"2e302a9b34c1f24f7b29e04423a914ca3f39de90645c770992811842390424ee": {"nota": "7.87", "valor": 7.87, "estat": "Aprovat"}, "82ee318325368c9778b1e65d1eb9891cf0e9b92285822af8a10a9de1f7a6bf36": {"nota": "6.39", "valor": 6.39, "estat": "Aprovat"}, "f19a02c46afc6a62b7f502f6bfa5de6347d8856c2fb74222fb6ed199b091e332": {"nota": "7.96", "valor": 7.96, "estat": "Aprovat"}, "4ca84a8ab35a03079f67c2ff92d1be184a9617228d0e380dc1370655ac1b5efd": {"nota": "7.59", "valor": 7.59, "estat": "Aprovat"}, "7e0327d4db1684076cd386bfade79419aef381ee897114b6d287f0929e5a8efc": {"nota": "7.22", "valor": 7.22, "estat": "Aprovat"}, "01fed684f9bc9266406dd8a9d5bf99c2ab65428cea261c98de1d82576ffd0fe2": {"nota": "0.00", "valor": 0.0, "estat": "No Presentat"}, "72be0ab6db1ec91c3458937f4d4106a90f24c6bce31d36d2d7535bd4710fa672": {"nota": "9.54", "valor": 9.54, "estat": "Aprovat"}, "7b553cdf343f3ccbb38ed8edf3839395a7d5dbc7959d4eafed50f6ab2012ef3b": {"nota": "4.81", "valor": 4.81, "estat": "Suspens"}, "4c80406c3c6d7d74f61cf21a97ed942ca9b7c7064e9feb0aa10c7d7c82fa52cc": {"nota": "7.31", "valor": 7.31, "estat": "Aprovat"}, "484c5b2a2738400029874afcb07632644f17cf87cd8af164e167f54208677759": {"nota": "6.67", "valor": 6.67, "estat": "Aprovat"}, "dde2a84
+</body>
+</html>
