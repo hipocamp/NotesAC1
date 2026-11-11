@@ -1,214 +1,178 @@
 <!DOCTYPE html>
 <html lang="ca">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Consulta de Qualificacions AC1 - Universitat de Barcelona</title>
-  <style>
-    :root {
-      --ub-blue: #003366;
-      --bg: #f4f6f9;
-      --card-bg: #ffffff;
-      --text: #1e293b;
-      --muted: #64748b;
-      --border: #cbd5e1;
-      --success-bg: #f0fdf4;
-      --success-border: #bbf7d0;
-      --success-text: #166534;
-      --error-bg: #fef2f2;
-      --error-border: #fecaca;
-      --error-text: #991b1b;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Consulta de qualificacions AC1</title>
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    }
+<style>
+* {
+  box-sizing: border-box;
+}
 
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 1.5rem;
-    }
+body {
+  margin: 0;
+  padding: 32px 16px;
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #202124;
+  background: #f4f6f8;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
 
-    .container {
-      background-color: var(--card-bg);
-      border-radius: 1rem;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-      padding: 2.5rem;
-      width: 100%;
-      max-width: 480px;
-      border: 1px solid var(--border);
-    }
+main {
+  width: 100%;
+  max-width: 560px;
+  margin-top: 28px;
+  padding: 34px;
+  background: #fff;
+  border: 1px solid #e1e5e9;
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(0,0,0,.06);
+}
 
-    .header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
+.ub {
+  text-align: center;
+  color: #333;
+  font-weight: 700;
+  letter-spacing: .04em;
+  font-size: 18px;
+  margin-bottom: 28px;
+}
 
-    .header .ub-name {
-      font-size: 0.8rem;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      color: var(--ub-blue);
-      margin-bottom: 0.8rem;
-    }
+h1 {
+  text-align: center;
+  font-size: 23px;
+  line-height: 1.25;
+  margin: 0 0 10px;
+}
 
-    .header h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--ub-blue);
-      margin-bottom: 0.5rem;
-    }
+.intro {
+  text-align: center;
+  color: #5f6368;
+  margin: 0 0 28px;
+  font-size: 15px;
+}
 
-    .header p {
-      font-size: 0.875rem;
-      color: var(--muted);
-    }
+label {
+  display: block;
+  font-weight: 600;
+  margin: 18px 0 7px;
+}
 
-    .form-group {
-      margin-bottom: 1.25rem;
-    }
+input {
+  display: block;
+  width: 100%;
+  padding: 13px 12px;
+  font-size: 16px;
+  border: 1px solid #c8cdd2;
+  border-radius: 6px;
+  background: white;
+}
 
-    label {
-      display: block;
-      font-size: 0.875rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: var(--ub-blue);
-    }
+input:focus {
+  outline: 2px solid #8ab4f8;
+  border-color: #1a73e8;
+}
 
-    input[type="text"], input[type="email"] {
-      width: 100%;
-      padding: 0.875rem 1rem;
-      border: 1.5px solid var(--border);
-      border-radius: 0.5rem;
-      font-size: 1rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
+button {
+  width: 100%;
+  margin-top: 24px;
+  padding: 14px;
+  border: 0;
+  border-radius: 6px;
+  background: #173e68;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
 
-    input:focus {
-      border-color: var(--ub-blue);
-      box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.15);
-    }
+button:hover {
+  background: #102f52;
+}
 
-    button {
-      width: 100%;
-      padding: 0.875rem;
-      background-color: var(--ub-blue);
-      color: white;
-      border: none;
-      border-radius: 0.5rem;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s;
-      margin-top: 0.5rem;
-    }
+#resultat {
+  margin-top: 22px;
+  padding: 14px;
+  border-radius: 6px;
+  text-align: center;
+  display: none;
+}
 
-    button:hover {
-      background-color: #002244;
-    }
+#resultat.ok {
+  display: block;
+  background: #e8f3eb;
+  color: #185c2c;
+}
 
-    .result-card {
-      margin-top: 1.5rem;
-      padding: 1.5rem;
-      border-radius: 0.5rem;
-      display: none;
-      text-align: center;
-    }
+#resultat.error {
+  display: block;
+  background: #fcebea;
+  color: #a12622;
+}
 
-    .result-card.success {
-      background-color: var(--success-bg);
-      border: 1px solid var(--success-border);
-      color: var(--success-text);
-    }
+.nota {
+  font-size: 30px;
+  font-weight: 700;
+  margin-top: 8px;
+}
 
-    .result-card.error {
-      background-color: var(--error-bg);
-      border: 1px solid var(--error-border);
-      color: var(--error-text);
-    }
-
-    .result-label {
-      font-size: 0.875rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.25rem;
-      opacity: 0.8;
-    }
-
-    .result-value {
-      font-size: 2.5rem;
-      font-weight: 800;
-    }
-
-    .result-niub {
-      font-size: 0.875rem;
-      margin-top: 0.5rem;
-      opacity: 0.9;
-    }
-  </style>
+@media (max-width: 480px) {
+  main {
+    padding: 25px 20px;
+    margin-top: 8px;
+  }
+}
+</style>
 </head>
 
 <body>
 
-  <div class="container">
+<main>
+  <div class="ub">UNIVERSITAT DE BARCELONA</div>
 
-    <div class="header">
-      <p class="ub-name">UNIVERSITAT DE BARCELONA</p>
-      <h1>Qualificacions AC1</h1>
-      <p>Introdueix el teu correu electrònic i el teu NIUB per consultar la teva nota</p>
-    </div>
+  <h1>Consulta de qualificacions</h1>
+  <p class="intro">Activitat AC1</p>
 
-    <form id="authForm" novalidate>
+  <form id="formulari" novalidate>
+    <label for="email">Adreça electrònica</label>
+    <input
+      id="email"
+      name="email"
+      type="email"
+      autocomplete="email"
+      required
+    >
 
-      <div class="form-group">
-        <label for="emailInput">Correu Electrònic</label>
-        <input
-          type="email"
-          id="emailInput"
-          placeholder="ex: nom.cognom@alumnes.ub.edu"
-          required
-          autocomplete="email"
-        >
-      </div>
+    <label for="niub">Número NIUB</label>
+    <input
+      id="niub"
+      name="niub"
+      type="text"
+      inputmode="text"
+      autocomplete="off"
+      required
+    >
 
-      <div class="form-group">
-        <label for="niubInput">Número d'Identificació (NIUB)</label>
-        <input
-          type="text"
-          id="niubInput"
-          placeholder="ex: 22402262"
-          required
-          autocomplete="off"
-        >
-      </div>
+    <button type="submit">Consultar nota</button>
+  </form>
 
-      <button type="button" id="consultButton">
-        Consultar Qualificació
-      </button>
+  <div id="resultat" role="status" aria-live="polite"></div>
+</main>
 
-    </form>
+<script>
+"use strict";
 
-    <div id="resultCard" class="result-card" role="status" aria-live="polite">
-      <div class="result-label" id="resultLabel">Qualificació AC1</div>
-      <div class="result-value" id="resultValue">-</div>
-      <div class="result-niub" id="resultNiub"></div>
-    </div>
+/*
+  BASE DE DADES
+  Format: NIUB|CORREU|NOTA
+  Les dades s'han extret del PDF de qualificacions.
+*/
 
-  </div>
-
-  <script>
-
-    const dadesText = `
+const dadesText = `
 niub14579320|igalanva7@alumnes.ub.edu|7,9
 niub14591205|dredonlo7@alumnes.ub.edu|8,2
 niub17892350|bmorenca13@alumnes.ub.edu|6,9
@@ -230,7 +194,7 @@ niub20710465|moltratu15@alumnes.ub.edu|7,0
 niub20722170|cvalermi7@alumnes.ub.edu|6,9
 niub20726716|clvegape20@alumnes.ub.edu|6,9
 niub20742993|crmartig145@alumnes.ub.edu|5,8
-niub20752314|ilsanchf33@alumnes.ub.edu|4,2
+niub20752314|llsanchf33@alumnes.ub.edu|4,2
 niub20766196|aramirbe9@alumnes.ub.edu|5,8
 niub20812820|mpastosa11@alumnes.ub.edu|3,0
 niub20812945|aboujuse110@alumnes.ub.edu|4,8
@@ -309,7 +273,7 @@ niub22337151|mgarcial279@alumnes.ub.edu|8,1
 niub22337652|isaldahe85@alumnes.ub.edu|5,7
 niub22344173|pmartisa260@alumnes.ub.edu|4,4
 niub22346855|iboschso8@alumnes.ub.edu|5,4
-niub22352573|gaelray34@alumnes.ub.edu|7,9
+niub22352573|rgaelray34@alumnes.ub.edu|7,9
 niub22355185|nsobreji7@alumnes.ub.edu|3,3
 niub22358910|amartima1049@alumnes.ub.edu|6,4
 niub22358943|mdongvna97@alumnes.ub.edu|6,7
@@ -322,7 +286,7 @@ niub22399720|ebesorsi60@alumnes.ub.edu|7,5
 niub22399731|mlopezgi358@alumnes.ub.edu|5,5
 niub22399742|esalseno7@alumnes.ub.edu|7,6
 niub22399753|bmirgarc37@alumnes.ub.edu|5,3
-niub22399764|attorreac35@alumnes.ub.edu|7,5
+niub22399764|atorreac35@alumnes.ub.edu|7,5
 niub22399786|llvericc7@alumnes.ub.edu|4,8
 niub22399801|jcalsila7@alumnes.ub.edu|6,4
 niub22399812|epararma7@alumnes.ub.edu|6,2
@@ -375,7 +339,7 @@ niub22400560|arodriga437@alumnes.ub.edu|6,2
 niub22400571|chuertal18@alumnes.ub.edu|6,9
 niub22400582|agualfer7@alumnes.ub.edu|6,1
 niub22400593|njimenma83@alumnes.ub.edu|6,9
-niub22400604|igonzaca361@alumnes.ub.edu|8,3
+niub22400604|lgonzaca361@alumnes.ub.edu|8,3
 niub22400615|mperezmo283@alumnes.ub.edu|5,7
 niub22400626|sbaquiza13@alumnes.ub.edu|5,8
 niub22400630|lrojasmo9@alumnes.ub.edu|4,4
@@ -396,7 +360,7 @@ niub22400781|mmolinsa108@alumnes.ub.edu|5,7
 niub22400792|mgelabpo28@alumnes.ub.edu|8,6
 niub22400803|sbanotor76@alumnes.ub.edu|6,9
 niub22400840|mmongebo70@alumnes.ub.edu|8,7
-niub22400851|ghatmaha@alumnes.ub.edu|5,7
+niub22400851|ghatmaha8@alumnes.ub.edu|5,7
 niub22400862|lpratapr23@alumnes.ub.edu|6,9
 niub22400873|vdepedal20@alumnes.ub.edu|8,7
 niub22400895|bllambca7@alumnes.ub.edu|8,8
@@ -423,7 +387,7 @@ niub22401164|clpascug37@alumnes.ub.edu|7,6
 niub22401175|ngomezar31@alumnes.ub.edu|5,9
 niub22401186|imoralpe8@alumnes.ub.edu|5,6
 niub22401190|clmartia59@alumnes.ub.edu|9,6
-niub22401201|dpuchoma@alumnes.ub.edu|7,2
+niub22401201|dpuchoma8@alumnes.ub.edu|7,2
 niub22401245|esuperen7@alumnes.ub.edu|4,3
 niub22401256|cljaramp7@alumnes.ub.edu|7,7
 niub22401271|mllatjce16@alumnes.ub.edu|8,1
@@ -516,7 +480,7 @@ niub22402520|phitobur7@alumnes.ub.edu|3,2
 niub22402531|ldelgaan7@alumnes.ub.edu|7,0
 niub22402542|lduranmo64@alumnes.ub.edu|6,8
 niub22402564|asanchba66@alumnes.ub.edu|5,2
-niub22402575|ivaldiri43@alumnes.ub.edu|3,8
+niub22402575|lvaldiri43@alumnes.ub.edu|3,8
 niub22402590|sllagoco98@alumnes.ub.edu|7,7
 niub22402601|jarasafe124@alumnes.ub.edu|8,1
 niub22402634|mgarcice64@alumnes.ub.edu|6,6
@@ -632,95 +596,64 @@ niub23617915|hjhoubeh7@alumnes.ub.edu|9,1
 niub23625276|shbravob118@alumnes.ub.edu|6,3
 niub23627962|esanchsa616@alumnes.ub.edu|4,4
 niub95814843|jtorrema129@alumnes.ub.edu|5,2
-    `;
+`;
 
-    const alumnesDades = Object.fromEntries(
-      dadesText.trim().split(/\n/).map(linia => {
-        const [niub, email, nota] = linia.trim().split("|");
-        return [niub, { email, nota }];
-      })
-    );
+// Convertim les dades de text en registres
+const alumnes = dadesText
+  .trim()
+  .split(/\r?\n/)
+  .map(function(linia) {
+    const camps = linia.trim().split("|");
+    return {
+      niub: camps[0].trim().toLowerCase(),
+      email: camps[1].trim().toLowerCase(),
+      grade: camps[2].trim().replace(",", ".")
+    };
+  });
 
-    // Funció auxiliar per netejar espais invisibles, insecables i majúscules
-    function netejarText(text) {
-      if (!text) return '';
-      return text.replace(/[\s\u00A0\u200B]/g, '').toLowerCase();
-    }
+const formulari = document.getElementById("formulari");
+const campEmail = document.getElementById("email");
+const campNiub = document.getElementById("niub");
+const resultat = document.getElementById("resultat");
 
-    function verificarDades() {
-      const emailInput = netejarText(document.getElementById('emailInput').value);
-      const niubRaw = netejarText(document.getElementById('niubInput').value);
-      const resultCard = document.getElementById('resultCard');
-      const resultLabel = document.getElementById('resultLabel');
-      const resultValue = document.getElementById('resultValue');
-      const resultNiub = document.getElementById('resultNiub');
+function normalitza(valor) {
+  return valor.trim().toLowerCase().replace(/\s+/g, "");
+}
 
-      if (!emailInput || !niubRaw) {
-        mostrarError('Dades incompletes', 'Introdueix el correu electrònic i el NIUB.');
-        return;
-      }
+formulari.addEventListener("submit", function(event) {
+  event.preventDefault();
 
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(emailInput)) {
-        mostrarError('Correu no vàlid', 'Revisa el format del correu electrònic.');
-        return;
-      }
+  const email = normalitza(campEmail.value);
+  const niub = normalitza(campNiub.value);
 
-      let niubKey = niubRaw;
-      if (!niubKey.startsWith('niub')) {
-        niubKey = 'niub' + niubKey;
-      }
+  resultat.className = "";
+  resultat.style.display = "none";
+  resultat.textContent = "";
 
-      if (!alumnesDades.hasOwnProperty(niubKey)) {
-        mostrarError('NIUB no trobat', 'El NIUB introduït no consta a la llista.');
-        return;
-      }
+  if (!email || !niub) {
+    resultat.className = "error";
+    resultat.textContent =
+      "Introdueix l'adreça electrònica i el número NIUB.";
+    return;
+  }
 
-      const alumne = alumnesDades[niubKey];
-      const emailRegistrat = netejarText(alumne.email);
+  const alumne = alumnes.find(function(registre) {
+    return registre.email === email && registre.niub === niub;
+  });
 
-      if (emailRegistrat !== emailInput) {
-        mostrarError('Error de verificació', 'El correu electrònic no coincideix amb aquest NIUB.');
-        return;
-      }
-
-      resultCard.className = 'result-card success';
-      resultLabel.textContent = 'La teva Qualificació AC1';
-      resultValue.textContent = alumne.nota;
-      resultNiub.textContent = `Correu: ${alumne.email} | NIUB: ${niubKey.toUpperCase()}`;
-      resultCard.style.display = 'block';
-    }
-
-    function mostrarError(títol, missatge) {
-      const resultCard = document.getElementById('resultCard');
-      resultCard.className = 'result-card error';
-      document.getElementById('resultLabel').textContent = títol;
-      document.getElementById('resultValue').textContent = 'Accés Denegat';
-      document.getElementById('resultNiub').textContent = missatge;
-      resultCard.style.display = 'block';
-    }
-
-    // Registra els esdeveniments sense atributs onclick dins l'HTML.
-    const formulariConsulta = document.getElementById('authForm');
-    const botoConsulta = document.getElementById('consultButton');
-
-    botoConsulta.addEventListener('click', verificarDades);
-
-    formulariConsulta.addEventListener('submit', function(event) {
-      event.preventDefault();
-      verificarDades();
-    });
-
-    // També permet consultar prement Retorn en qualsevol dels camps.
-    document.querySelectorAll('#authForm input').forEach(function(camp) {
-      camp.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-          event.preventDefault();
-          verificarDades();
-        }
-      });
-    });
-
-  </script>
+  if (alumne) {
+    resultat.className = "ok";
+    resultat.innerHTML =
+      "La teva nota de l'AC1 és:<div class='nota'>" +
+      alumne.grade.replace(".", ",") +
+      "</div>";
+  } else {
+    resultat.className = "error";
+    resultat.textContent =
+      "Accés denegat. Comprova que el correu electrònic i el NIUB siguin correctes.";
+  }
+});
+</script>
 
 </body>
 </html>
